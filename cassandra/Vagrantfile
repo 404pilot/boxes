@@ -1,0 +1,45 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+CASSANDRA_DOWNLOAD_URL="http://apache.osuosl.org/cassandra/2.1.2/apache-cassandra-2.1.2-bin.tar.gz"
+CASSANDRA_FOLDER="apache-cassandra-2.1.2"
+
+$script = <<SCRIPT
+#!/bin/bash
+
+sudo apt-get update
+
+echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Install Java"
+
+sudo apt-get install openjdk-7-jre -y
+# sudo apt-get install openjdk-7-jdk -y
+
+echo ""~~~~~~~ java version:"
+java -version
+
+echo >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Install Cassandra"
+
+wget -q -O /tmp/cassandra.tar.gz #{CASSANDRA_DOWNLOAD_URL}
+sudo tar -zx -f /tmp/cassandra.tar.gz -C /opt/
+
+echo export CASSANDRA_HOME='/opt/#{CASSANDRA_FOLDER}' >> /etc/profile
+echo export PATH='$PATH:${CASSANDRA_HOME}/bin' >> /etc/profile
+
+source /etc/profile
+
+echo "~~~~~~~ Cassandra Version"
+cassandra -v
+echo "~~~~~~~ Cqlsh Version:"
+cqlsh --v
+
+SCRIPT
+
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  config.vm.box = "ubuntu/trusty64"
+
+  config.vm.provision :shell, :inline => $script
+
+end
