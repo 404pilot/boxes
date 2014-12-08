@@ -2,7 +2,6 @@
 # vi: set ft=ruby :
 
 CASSANDRA_DOWNLOAD_URL="http://apache.osuosl.org/cassandra/2.1.2/apache-cassandra-2.1.2-bin.tar.gz"
-CASSANDRA_FOLDER="apache-cassandra-2.1.2"
 
 $script = <<SCRIPT
 #!/bin/bash
@@ -14,23 +13,43 @@ echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Install Java"
 sudo apt-get install openjdk-7-jre -y
 # sudo apt-get install openjdk-7-jdk -y
 
-echo ""~~~~~~~ java version:"
-java -version
+echo "~~~~~~~ java version:"
+echo $(java -version)
 
-echo >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Install Cassandra"
+echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Install Cassandra"
 
 wget -q -O /tmp/cassandra.tar.gz #{CASSANDRA_DOWNLOAD_URL}
 sudo tar -zx -f /tmp/cassandra.tar.gz -C /opt/
 
-echo export CASSANDRA_HOME='/opt/#{CASSANDRA_FOLDER}' >> /etc/profile
+CASSANDRA_FOLDER=$(ls /opt | grep cassandra)
+
+echo export CASSANDRA_HOME="/opt/${CASSANDRA_FOLDER}" >> /etc/profile
 echo export PATH='$PATH:${CASSANDRA_HOME}/bin' >> /etc/profile
 
 source /etc/profile
 
+# modify configuration
+
+mkdir -p /vagrant/.data
+# mkdir -p /vagrant/.data/data
+# mkdir -p /vagrant/.data/commitlog
+# mkdir -p /vagrant/.data/saved_caches
+
+mkdir -p /opt/${CASSANDRA_FOLDER}/data/data
+mkdir -p /opt/${CASSANDRA_FOLDER}/data/commitlog
+mkdir -p /opt/${CASSANDRA_FOLDER}/data/saved_caches
+
+chmod 777 /opt/${CASSANDRA_FOLDER}/data/data
+chmod 777 /opt/${CASSANDRA_FOLDER}/data/commitlog
+chmod 777 /opt/${CASSANDRA_FOLDER}/data/saved_caches
+
+cp /vagrant/config/logback.xml /opt/${CASSANDRA_FOLDER}/conf/
+cp /vagrant/config/cassandra.yaml /opt/${CASSANDRA_FOLDER}/conf/
+
 echo "~~~~~~~ Cassandra Version"
-cassandra -v
+echo $(cassandra -v)
 echo "~~~~~~~ Cqlsh Version:"
-cqlsh --v
+echo $(cqlsh --v)
 
 SCRIPT
 
@@ -38,8 +57,10 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  config.vm.box = "ubuntu/trusty64"
+	config.vm.box = "ubuntu/trusty64"
 
-  config.vm.provision :shell, :inline => $script
+	config.vm.provision :shell, :inline => $script
+
+	config.vm.network "private_network", ip: "192.168.50.4"
 
 end
