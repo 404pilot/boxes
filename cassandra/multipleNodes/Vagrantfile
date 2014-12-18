@@ -1,30 +1,23 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-CASSANDRA_DOWNLOAD_URL = "http://apache.osuosl.org/cassandra/2.1.2/apache-cassandra-2.1.2-bin.tar.gz"
-
 VAGRANTFILE_API_VERSION = "2"
 
-IP_PREFIX = "192.168.50"
-
-BRIDGED_NETWORK_INTERFACE = "eth0"
-
-boxes = [
-	{:name => :web, :ip => '192.168.50.101'},
-	{:name => :data, :ip => '192.168.50.102'}
-]
+CUSTOM_CONFIG = {
+	:CASSANDRA_DOWNLOAD_URL => "http://apache.osuosl.org/cassandra/2.1.2/apache-cassandra-2.1.2-bin.tar.gz" ,
+	:BRIDGED_NETWORK_INTERFACE => "eth0",
+	:IP_PREFIX => "192.168.50"
+}
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-
 	(1..3).each do |i|
 		config.vm.define "clusterN#{i}" do |machine|
 			machine.vm.box = "ubuntu/trusty64"
-			# config.vm.network "public_network", ip: "192.168.0.17"
-			machine.vm.network "public_network", bridge: BRIDGED_NETWORK_INTERFACE, ip: "192.168.50.10#{i}"
+			machine.vm.network "public_network", bridge: CUSTOM_CONFIG[:BRIDGED_NETWORK_INTERFACE], ip: "#{CUSTOM_CONFIG[:IP_PREFIX]}#{i}"
 
 			machine.vm.provision :shell do |s|
 				s.path = "install_cassandra.sh"
-				s.args = "#{CASSANDRA_DOWNLOAD_URL} clusterN#{i} #{IP_PREFIX}.10#{i}"
+				s.args = "#{CUSTOM_CONFIG[:CASSANDRA_DOWNLOAD_URL]} clusterN#{i}"
 			end
 		end
 	end
