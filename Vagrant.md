@@ -55,3 +55,7 @@ Try `su` command.
 	
 	# change user
 	su - vagrant
+
+Or set `privileged` to `false` to run the shell with vagrant user (not root)
+	
+	config.vm.provision :shell, :path => "install-rvm.sh", :args => "stable", :privileged => false

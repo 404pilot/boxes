@@ -7,10 +7,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.box = "ubuntu/trusty64"
 
-  config.vm.provision :shell, :path => "install-ruby-stuff.sh" 
+  config.vm.provision :shell, :path => "install-rvm.sh", :args => "stable", :privileged => false
+  config.vm.provision :shell, :path => "install-ruby.sh", :args => "2.2.1 rails haml", :privileged => false
 
-  # config.vm.provision :shell, :path => "install-rvm.sh",  :args => "stable"
-  # # config.vm.provision :shell, :path => "install-ruby.sh", :args => "1.9.3"
-  # config.vm.provision :shell, :path => "install-ruby.sh", :args => "2.0.0 rails haml"
+  config.vm.synced_folder "shared/", "/home/vagrant/shared"
 
 end

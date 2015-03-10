@@ -1,8 +1,9 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-source /usr/local/rvm/scripts/rvm
+source ~/.rvm/scripts/rvm
 
-rvm use --install $1
+rvm install $1
+rvm use $1 --default
 
 shift
 
