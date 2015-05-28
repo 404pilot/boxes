@@ -15,5 +15,5 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.network "private_network", ip: "#{CONFIG[:VM_IP]}"
 
-  config.vm.provision :shell, :path => "es_init.sh", :args => "#{CONFIG[:URL]}", :privileged => false
+  config.vm.provision :shell, :path => "vm_install.sh", :args => "#{CONFIG[:URL]}", :privileged => false
 end

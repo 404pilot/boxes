@@ -13,9 +13,11 @@ TAR_URI=${1}
 echo "====================================================="
 echo "                    Install Java                     "
 echo "====================================================="
-sudo apt-get update > /dev/null \
-	&& sudo apt-get autoclean \
-	&& sudo apt-get install openjdk-7-jre -y > /dev/null
+# sudo apt-get update > /dev/null \
+# 	&& sudo apt-get autoclean \
+# 	&& sudo apt-get install openjdk-7-jre -y > /dev/null
+
+sudo apt-get install openjdk-7-jre -y > /dev/null
 
 # echo "Java version: $(java -version)"
 # echo $(java -version)
@@ -34,6 +36,13 @@ wget -q -O /tmp/elasticsearch.tar.gz ${TAR_URI} \
 source ~/.bashrc
 
 echo "====================================================="
+echo "                Install Plugins for ES               "
+echo "====================================================="
+
+${ES_FOLDER}/bin/plugin -s -install royrusso/elasticsearch-HQ
+${ES_FOLDER}/bin/plugin -s -i elasticsearch/marvel/latest
+
+echo "====================================================="
 echo "                Running Elastic Search               "
 echo "====================================================="
 
@@ -41,4 +50,4 @@ ${ES_FOLDER}/bin/elasticsearch -d
 
 sleep 10s
 
-echo $(curl 'http://localhost:9200/?pretty')
+\curl 'http://localhost:9200/?pretty'
