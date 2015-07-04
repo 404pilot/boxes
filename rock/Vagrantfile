@@ -1,0 +1,21 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+
+  config.vm.box = "ubuntu/trusty64"
+
+  config.vm.synced_folder "./share/", "/home/vagrant/share"
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.gui = false
+    vb.memory = "2048"
+    vb.cpus = 2
+  end
+
+  # config.vm.provision "docker"
+
+  config.vm.network :forwarded_port, guest: 8080, host: 8080
+
+  config.vm.provision :shell, path: "bootstrap.sh", :privileged => false
+end

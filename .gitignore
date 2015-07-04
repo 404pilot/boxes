@@ -8,4 +8,6 @@
 .data/
 
 #shared folder
-.shared/
+.shared/*
+
+share/*
