@@ -15,9 +15,7 @@ echo "source ~/.bash_aliases" >> ~/.bashrc \
     && ln -s ~/.dotfiles/bash/bash_aliases ~/.bash_aliases \
     && source ~/.bashrc
 
-rm ~/.gitconfig \
-    &&ln -s ~/.dotfiles/git/gitconfig ~/.gitconfig
+rm ~/.gitconfig | ln -s ~/.dotfiles/git/gitconfig ~/.gitconfig
 
-## install docker
-sudo wget -qO- https://get.docker.com/ | sh \
-    && sudo usermod -aG docker vagrant
+## chnage home directory
+# sudo usermod -d ~/share vagrant
