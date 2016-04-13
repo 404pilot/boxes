@@ -1,0 +1,20 @@
+[Unit]
+Description=local single elasticserach 2.3 instance
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker kill es-2.3
+ExecStartPre=-/usr/bin/docker rm es-2.3
+ExecStartPre=/usr/bin/docker pull elasticsearch:2.3
+ExecStart=/usr/bin/docker run \
+    --name es-2.3 \
+    -p 0.0.0.0:9200:9200 \
+    -p 0.0.0.0:9300:9300 \
+    elasticsearch:2.3
+# ExecStartPost=/usr/bin/etcdctl set /domains/example.com/%H:%i running
+ExecStop=-/usr/bin/docker stop es-2.3
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,42 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+$update_channel = "stable"
+$image_version = "current"
+
+Vagrant.configure(2) do |config|
+
+  config.vm.box_url = "https://storage.googleapis.com/%s.release.core-os.net/amd64-usr/%s/coreos_production_vagrant.json" % [$update_channel, $image_version]
+  config.vm.box = "coreos-%s" % $update_channel
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.gui = false
+    vb.memory = "2048"
+    vb.cpus = 2
+  end
+
+  config.vm.synced_folder "../service", "/etc/systemd/system", :nfs => true, :mount_options => ['nolock,vers=3,udp']
+
+  config.vm.provider :virtualbox do |v|
+    # On VirtualBox, we don't have guest additions or a functional vboxsf
+    # in CoreOS, so tell Vagrant that so it can be smarter.
+    v.check_guest_additions = false
+    v.functional_vboxsf     = false
+  end
+
+  # plugin conflict
+  if Vagrant.has_plugin?("vagrant-vbguest") then
+    config.vbguest.auto_update = false
+  end
+
+  # run `vagrant reload` to refresh port forwarding
+  config.vm.network :forwarded_port, guest: 5432, host: 5432 # postgresql
+  config.vm.network :forwarded_port, guest: 6379, host: 6379 # redis
+  config.vm.network :forwarded_port, guest: 9200, host: 9200 # elastic search
+  config.vm.network :forwarded_port, guest: 9300, host: 9300 # elastic search
+
+  # config.vm.provision :shell, :path => "../common/install-essentials.sh", :privileged => false
+  # config.vm.provision :shell, :path => "../common/install-docker.sh", :privileged => false
+
+  config.vm.network "private_network", ip: "172.17.8.100"
+end
