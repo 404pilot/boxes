@@ -15,8 +15,6 @@ Vagrant.configure(2) do |config|
     vb.cpus = 2
   end
 
-  config.vm.synced_folder "../service", "/etc/systemd/system", :nfs => true, :mount_options => ['nolock,vers=3,udp']
-
   config.vm.provider :virtualbox do |v|
     # On VirtualBox, we don't have guest additions or a functional vboxsf
     # in CoreOS, so tell Vagrant that so it can be smarter.
@@ -28,6 +26,10 @@ Vagrant.configure(2) do |config|
   if Vagrant.has_plugin?("vagrant-vbguest") then
     config.vbguest.auto_update = false
   end
+
+  config.vm.synced_folder "../service", "/home/core/share", type: "nfs", mount_options: ['nolock,vers=3,udp']
+
+  # config.vm.synced_folder "../service", "/home/core/share", type: 'nfs', mount_options: ['rw', 'vers=3', 'tcp', 'fsc', 'actimeo=2']
 
   # run `vagrant reload` to refresh port forwarding
   config.vm.network :forwarded_port, guest: 5432, host: 5432 # postgresql

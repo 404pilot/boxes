@@ -1,20 +1,11 @@
 
-
-## Vagrant Commands
-
-	vagrant init
-	vagrant up
-	vagrant destroy -f
-	
-	vagrant ssh
-
-## Vagrant plugin
+## Synced Folder Issue
 
 > Failed to mount folders in Linux guest. This is usually because
 > the "vboxsf" file system is not available. Please verify that
 > the guest additions are properly installed in the guest and
 > can work properly. The command attempted was:
-> 
+>
 > mount -t vboxsf -o uid=`id -u vagrant`,gid=`getent group vagrant | cut -d: -f3` vagrant /vagrant
 > mount -t vboxsf -o uid=`id -u vagrant`,gid=`id -g vagrant` vagrant /vagrant
 >
@@ -28,13 +19,15 @@ try :
 vagrant plugin install vagrant-vbguest
 ```
 
+**Disable any vpn (cisco anyconnect) connection during `vagrant up`**
+
 ## Vagrant Networking
 
 	Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 		config.vm.network "private_network", ip: "192.168.50.4"
 	end
 
-This will 
+This will
 
 1. Create a **host-only network** adapter for `virtualbox` with ip address `192.168.50.1`
 2. Apply this host-only network adapter to the newly created box
@@ -65,17 +58,17 @@ But sometimes (for example install `rvm`)
 	==> default: Signature made Sun 04 Jan 2015 11:47:58 PM UTC using RSA key ID BF04FF17
 	==> default: gpg:
 	==> default: Can't check signature: public key not found
-	
+
 This should be installed as `Vagrant` login user.
 
 Try `su` command.
 
 	# run a command as Vagrant user then exit
 	su -c _something vagrant
-	
+
 	# change user
 	su - vagrant
 
 Or set `privileged` to `false` to run the shell with vagrant user (not root)
-	
+
 	config.vm.provision :shell, :path => "install-rvm.sh", :args => "stable", :privileged => false
